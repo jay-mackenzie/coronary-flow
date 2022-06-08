@@ -1,0 +1,13 @@
+all versions
+
+
+600trifSumTab.txt
+650trifSumTab.txt
+700trifSumTab.txt
+750trifSumTab.txt
+800bifSumTab.txt
+800seriesSumTab.txt
+800trifSumTab.txt
+800veinsSumTab.txt
+850trifSumTab.txt
+fullSumTab.txt
