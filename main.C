@@ -116,11 +116,11 @@ int main(int argc, char * argv[]) {
     for (int ii = 0; ii < nbrves; ii++) {
 
 
-        for (int j = 0; j < line_len; j++)
+        for (int j = 0; j <= 6; j++)
         {
             if (int(array[ii][j]) == array[ii][j])
             {printf("%d, ", int(array[ii][j]));}
-            else    {printf("%f, ", array[ii][j]);}
+            else    {printf("%3.2f,\t", array[ii][j]);}
         } // print vessels specs to terminal
 
         //  Parameters required to initiate class Tube (Length,topradius,botradius,LeftDaughter,MidDaughter,RightDaughter,rmin, grid points,
@@ -130,16 +130,22 @@ int main(int argc, char * argv[]) {
         
         // printf("\n\n%f\n\n", array[ii][7]);
             double rm_val;
-            if (int(array[ii][7]) == 0){rm_val =0;}
-            else {rm_val = rm;}
+            if (int(array[ii][4]) != 0){rm_val =0;}else {rm_val = rm;}
+            double init_val;
+            if (int(array[ii][4]) == 0 && int(array[ii][6]) != 0){init_val =3;} else{init_val =  array[ii][8];}
 
-            Arteries[int(array[ii][0])] = new Tube(array[ii][1], array[ii][2], array[ii][3], Arteries[int(array[ii][4])], Arteries[int(array[ii][5])], Arteries[int(array[ii][6])],rm_val,  gridPts,  array[ii][8], f1, f2, f3, fa1, fa2, fa3, fv1, fv2, fv3, asym, expo, lrrA, lrrV, SVPA, LVPA);
+
+
+            Arteries[int(array[ii][0])] = new Tube(array[ii][1], array[ii][2], array[ii][3], Arteries[int(array[ii][4])], Arteries[int(array[ii][5])], Arteries[int(array[ii][6])],rm_val,  gridPts,  init_val, f1, f2, f3, fa1, fa2, fa3, fv1, fv2, fv3, asym, expo, lrrA, lrrV, SVPA, LVPA);
             
+            printf("rm = %4.3f\t", Arteries[int(array[ii][0])]->rm);
+            printf("init = %d\t", Arteries[int(array[ii][0])]->init);
+
         printf("ves: %i\n", ii);
     }
     printf("\nVessels are made\n\n");
 
-    // exit(1);
+    exit(1);
 
     // ===================================================================================================================================================
     
