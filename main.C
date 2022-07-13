@@ -62,7 +62,7 @@ int main(int argc, char * argv[]) {
     // t0 = t0*Period;
 
     // can also be set in the header file or via command line args
-    gridPts = 10, f3 = 2.53*pow(10, 6), fa3 = 1.03*pow(10, 6), threshold =  1.0 ,max_its = 100,num_to_save = 1; 
+    gridPts = 10, f3 = 2.53*pow(10, 6), fa3 = 1.03*pow(10, 6), threshold =  10.0 ,max_its = 100,num_to_save = 1; 
     rm = 0.002;
     
     // set the rest of the stiffnesses.
@@ -94,7 +94,7 @@ int main(int argc, char * argv[]) {
 
     // set nbrves and make enough tubes
     if (treefile) {while (fscanf(treefile, "%s", str) != EOF) { char_count++; }}; fclose(treefile);
-    int line_len = 9; nbrves = int(char_count / line_len);
+    int line_len = 8; nbrves = int(char_count / line_len);
     Tube * Arteries[nbrves];
 
     double * array[nbrves];
@@ -126,13 +126,12 @@ int main(int argc, char * argv[]) {
         //  Parameters required to initiate class Tube (Length,topradius,botradius,LeftDaughter,MidDaughter,RightDaughter,rmin, grid points,
         //                                              init,f1,f2,f3,fa1,fa2,fa3,fv1,fv2,fv3,asym,expo,lrrA,lrrV,SVPA,LVPA);
         
-        //  handle the cases for daughters
-        
-        // printf("\n\n%f\n\n", array[ii][7]);
+        //  the summary table tsv file has columns
+        //  index, length, toprad, botrad, LD, MD, RD, rm, init
             double rm_val;
             if (int(array[ii][4]) != 0){rm_val =0;}else {rm_val = rm;}
             double init_val;
-            if (int(array[ii][4]) == 0 && int(array[ii][6]) != 0){init_val =3;} else{init_val =  array[ii][8];}
+            if (int(array[ii][4]) == 0 && int(array[ii][6]) != 0){init_val =3;} else{init_val =  array[ii][7];}
 
 
 
@@ -145,7 +144,7 @@ int main(int argc, char * argv[]) {
     }
     printf("\nVessels are made\n\n");
 
-    exit(1);
+    // exit(1);
 
     // ===================================================================================================================================================
     
