@@ -1,20 +1,21 @@
 import numpy as np
 from matplotlib import pyplot as plt
+# import matplotlib
 
 # def
 
 def name(path):
-    return path+"/"+path+".2d"
+    return path+".2d"
 
 def load(two_D_file):
     return np.loadtxt(two_D_file,delimiter=',')
 
 print("choose name")
 # pth = input()
-pth = "test2"
-nm = name(pth)
+pth = "./Outputs/test2_100.2d"
+# nm = name(pth)
 # print(nm)
-dt = load(nm)
+dt = load(pth)
 
 p = []
 q = []

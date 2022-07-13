@@ -10,12 +10,12 @@
 #*******************************************#
 
 ## JAM's Mac ##
-CXX=/usr/local/bin/g++-11
-FC=/usr/local/bin/gfortran-11
+#CXX=/usr/local/bin/g++-11
+#FC=/usr/local/bin/gfortran-11
 
 ## Euclid-02 ##
-# CXX=/usr/bin/g++
-# FC=/usr/bin/gfortran
+CXX=/usr/bin/g++
+FC=/usr/bin/gfortran
 
 CXXFLAGS=-O2 -g -Wall -D_REENTRANT -fPIC
 FLIBS=-lgfortran

@@ -25,8 +25,7 @@
 #include "roots_multidim.h"
 using namespace std;
 
-extern int nbrves, tmstps;
-extern int nbrves, tmstps;
+extern int nbrves, tmstps, id;
 extern char * CO_filename; // is the in data
 extern char * large_filename; // is the in data // JAM. 05/2020
 extern char * small_filename; // is the in data // JAM. 05/2020
@@ -45,55 +44,55 @@ void impedance_driver_(int * tmstps, double * Period, double * rho,
     double * asym, double * expo,
     double * lrrA, double * lrrV);
 
-VecDoub vecfunc(VecDoub_I xb, VecDoub_I kB) {
-    //  from bound match:
-    //  kB[38] = IPP[qLnb];
-    //  kB[39] = RD->IPP[qLnb];
-    //  kB[40] = LVPA * IPP[qLnb-1];
-    //  kB[43] = RD->IPP[qLnb-1];
+// VecDoub vecfunc(VecDoub_I xb, VecDoub_I kB) {
+//     //  from bound match:
+//     //  kB[38] = IPP[qLnb];
+//     //  kB[39] = RD->IPP[qLnb];
+//     //  kB[40] = LVPA * IPP[qLnb-1];
+//     //  kB[43] = RD->IPP[qLnb-1];
 
-    Doub PA = kB[17] * (sqrt(xb[0] / kB[18]) - 1.0) + kB[38]; // FlP
-    Doub PV = kB[19] * (sqrt(xb[4] / kB[20]) - 1.0) + kB[39]; // FlP
-    Doub PAh = kB[17] * (sqrt((0.5 * (kB[12] + xb[2])) / kB[18]) - 1.0) + (kB[38] + kB[40]) * 0.5; // FlP
-    Doub PVh = kB[19] * (sqrt((0.5 * (kB[13] + xb[6])) / kB[20]) - 1.0) + (kB[39] + kB[43]) * 0.5; // FlP
+//     Doub PA = kB[17] * (sqrt(xb[0] / kB[18]) - 1.0) + kB[38]; // FlP
+//     Doub PV = kB[19] * (sqrt(xb[4] / kB[20]) - 1.0) + kB[39]; // FlP
+//     Doub PAh = kB[17] * (sqrt((0.5 * (kB[12] + xb[2])) / kB[18]) - 1.0) + (kB[38] + kB[40]) * 0.5; // FlP
+//     Doub PVh = kB[19] * (sqrt((0.5 * (kB[13] + xb[6])) / kB[20]) - 1.0) + (kB[39] + kB[43]) * 0.5; // FlP
 
-    Doub BhNxb2 = kB[21] *
-        (cu(sqrt(xb[2])) - cu(sqrt(kB[22]))) / (3.0 * sqrt(kB[22]) * kB[23]);
+//     Doub BhNxb2 = kB[21] *
+//         (cu(sqrt(xb[2])) - cu(sqrt(kB[22]))) / (3.0 * sqrt(kB[22]) * kB[23]);
 
-    Doub Fxb3xb2 = kB[24] * xb[3] / xb[2];
+//     Doub Fxb3xb2 = kB[24] * xb[3] / xb[2];
 
-    Doub dBdx1hNxb2 = (
-        (kB[25] / sqrt(kB[22]) - sqrt(kB[28]) * kB[21] / kB[22]) *
-        (cu(sqrt(xb[2])) - cu(sqrt(kB[22]))) / 3.0 +
-        kB[21] *
-        (kB[28] * kB[27] * (sqrt(cu(xb[2] / kB[22])) - 1.0) -
-            xb[2] * (sqrt(xb[2] / kB[22]) - 1) * kB[25] / kB[21])) * kB[26] / kB[23];
+//     Doub dBdx1hNxb2 = (
+//         (kB[25] / sqrt(kB[22]) - sqrt(kB[28]) * kB[21] / kB[22]) *
+//         (cu(sqrt(xb[2])) - cu(sqrt(kB[22]))) / 3.0 +
+//         kB[21] *
+//         (kB[28] * kB[27] * (sqrt(cu(xb[2] / kB[22])) - 1.0) -
+//             xb[2] * (sqrt(xb[2] / kB[22]) - 1) * kB[25] / kB[21])) * kB[26] / kB[23];
 
-    Doub RDBhMxb6 = kB[29] *
-        (cu(sqrt(xb[4])) - cu(sqrt(kB[30]))) / (3.0 * sqrt(kB[30]) * kB[23]);
+//     Doub RDBhMxb6 = kB[29] *
+//         (cu(sqrt(xb[4])) - cu(sqrt(kB[30]))) / (3.0 * sqrt(kB[30]) * kB[23]);
 
-    Doub RDFxb7xb6 = kB[24] * xb[7] / xb[6];
+//     Doub RDFxb7xb6 = kB[24] * xb[7] / xb[6];
 
-    Doub RDdBdx1hMxb6 = (
-        (kB[31] / sqrt(kB[30]) - sqrt(kB[28]) * kB[29] / kB[30]) *
-        (cu(sqrt(xb[4])) - cu(sqrt(kB[30]))) / 3.0 +
-        kB[29] * (kB[28] * kB[33] * (sqrt(cu(xb[4] / kB[30])) - 1.0) -
-            xb[4] * (sqrt(xb[4] / kB[30]) - 1.0) * kB[31] / kB[29])) * kB[32] / kB[23];
+//     Doub RDdBdx1hMxb6 = (
+//         (kB[31] / sqrt(kB[30]) - sqrt(kB[28]) * kB[29] / kB[30]) *
+//         (cu(sqrt(xb[4])) - cu(sqrt(kB[30]))) / 3.0 +
+//         kB[29] * (kB[28] * kB[33] * (sqrt(cu(xb[4] / kB[30])) - 1.0) -
+//             xb[4] * (sqrt(xb[4] / kB[30]) - 1.0) * kB[31] / kB[29])) * kB[32] / kB[23];
 
-    // residuals
-    VecDoub fvec(8);
-    fvec[0] = kB[1] - xb[0] - kB[0] * xb[3];
-    fvec[1] = kB[2] - xb[1] - kB[0] * (sq(xb[3]) / xb[2] + BhNxb2) + kB[15] * (Fxb3xb2 + dBdx1hNxb2);
-    fvec[2] = kB[3] - xb[1] + kB[4] * PA + kB[5] * PV - (kB[34] + kB[35]) * kB[41]; //  JAM
-    fvec[3] = kB[6] - xb[4] - kB[16] * xb[7];
-    fvec[4] = kB[7] - xb[5] - kB[16] * (sq(xb[7]) / xb[6] + RDBhMxb6) +
-        kB[15] * (RDFxb7xb6 + RDdBdx1hMxb6);
-    fvec[5] = kB[8] - xb[5] + kB[9] * PA + kB[10] * PV - (kB[36] + kB[37]) * kB[41]; //  JAM
-    fvec[6] = kB[11] - 0.5 * xb[3] + kB[4] * PAh + kB[5] * PVh - (kB[34] + kB[35]) * 0.5 * (kB[41] + kB[42]); //  JAM
-    fvec[7] = kB[14] - 0.5 * xb[7] + kB[9] * PAh + kB[10] * PVh - (kB[36] + kB[37]) * 0.5 * (kB[41] + kB[42]); //  JAM
+//     // residuals
+//     VecDoub fvec(8);
+//     fvec[0] = kB[1] - xb[0] - kB[0] * xb[3];
+//     fvec[1] = kB[2] - xb[1] - kB[0] * (sq(xb[3]) / xb[2] + BhNxb2) + kB[15] * (Fxb3xb2 + dBdx1hNxb2);
+//     fvec[2] = kB[3] - xb[1] + kB[4] * PA + kB[5] * PV - (kB[34] + kB[35]) * kB[41]; //  JAM
+//     fvec[3] = kB[6] - xb[4] - kB[16] * xb[7];
+//     fvec[4] = kB[7] - xb[5] - kB[16] * (sq(xb[7]) / xb[6] + RDBhMxb6) +
+//         kB[15] * (RDFxb7xb6 + RDdBdx1hMxb6);
+//     fvec[5] = kB[8] - xb[5] + kB[9] * PA + kB[10] * PV - (kB[36] + kB[37]) * kB[41]; //  JAM
+//     fvec[6] = kB[11] - 0.5 * xb[3] + kB[4] * PAh + kB[5] * PVh - (kB[34] + kB[35]) * 0.5 * (kB[41] + kB[42]); //  JAM
+//     fvec[7] = kB[14] - 0.5 * xb[7] + kB[9] * PAh + kB[10] * PVh - (kB[36] + kB[37]) * 0.5 * (kB[41] + kB[42]); //  JAM
 
-    return fvec;
-}
+//     return fvec;
+// }
 
 //  Methods of class Tube, see arteries.h for description of this.
 //
@@ -290,15 +289,26 @@ void Tube::printPxt(FILE * fd, double t, int offset, int sim_time, int vessel_id
          Qnew[i]*q, Anew[i]*Lr2, \
                     c(i, Anew[i])*Fr2, (P(sim_time, i,Anew[i])+p0-IPP[i])*rho*g*Lr/conv); */
 
-        fprintf(fd, "%i, %9.8f,%9.8f,%9.8f,%9.8f,%9.8f,%9.8f,%9.8f,%9.8f\n",
-            vessel_id, t * Lr3 / q, // vessel, time
+        // fprintf(fd, "%i, %9.8f,%9.8f,%9.8f,%9.8f,%9.8f,%9.8f,%9.8f,%9.8f\n",
+        //     vessel_id, t * Lr3 / q, // vessel, time
+        //     (i + offset) * h * Lr, // space
+        //     (P(sim_time, i, Anew[i]) + p0) * rho * g * Lr / conv, //flp
+        //     Qnew[i] * q, // flow
+        //     Anew[i] * Lr2, //area
+        //     (Qnew[i] * q) / (Anew[i] * Lr2), //fluid velocity
+        //     (P(sim_time, i, Anew[i]) + p0 - IPP[sim_time]) * rho * g * Lr / conv, // tmp
+        //     c(i, Anew[i]) * Fr2);
+        fprintf(fd, "%i, %9.8f,%9.8f,%9.8f,%9.8f,%9.8f\n",
+            vessel_id, // vessel 
+            t * Lr3 / q, // time
             (i + offset) * h * Lr, // space
             (P(sim_time, i, Anew[i]) + p0) * rho * g * Lr / conv, //flp
             Qnew[i] * q, // flow
-            Anew[i] * Lr2, //area
-            (Qnew[i] * q) / (Anew[i] * Lr2), //fluid velocity
-            (P(sim_time, i, Anew[i]) + p0 - IPP[sim_time]) * rho * g * Lr / conv, // tmp
-            c(i, Anew[i]) * Fr2);
+            (P(sim_time, i, Anew[i]) + p0 - IPP[sim_time]) * rho * g * Lr / conv // tmp
+            );
+
+
+
         //  Time,
         //  Vessel Length,
         //  Fluid Pressure [mmHg],
@@ -331,6 +341,7 @@ double Tube::P(int qLnb, int i, double A) {
 
     return pold;
 }
+
 
 double Tube::dPdA(int i, double A) {
     double pold = fr[i] / (sqrt(A0[i] * A) * 2.0); // Changed by JAM. FEB 2019.
@@ -498,18 +509,18 @@ void Tube::step(double k, int ii, double t, double t0, char * file_name) {
     if (t0 != 0 && t == t0) {
         if (ii == 0) {printf("restarting\n");}
 
-        // load in all quants usually found here from data files
-        char fAname[20]; sprintf(fAname, "./%s/sv_1_%i.2d", file_name, ii); FILE * fA = fopen(fAname, "r");
-        for (int i = 0; i <= N; i++) {fscanf(fA, "%lf,%lf,%lf,%lf,%lf,%lf", 
-            & Aold[i], & Qold[i], & R1[i], & R2[i], & S1[i], & S2[i]);}
-        fclose(fA);
+        // load in all quants usually found here from data files // only in restartables
+        // char fAname[20]; sprintf(fAname, "./%s/sv_1_%i.2d", file_name, ii); FILE * fA = fopen(fAname, "r");
+        // for (int i = 0; i <= N; i++) {fscanf(fA, "%lf,%lf,%lf,%lf,%lf,%lf", 
+        //     & Aold[i], & Qold[i], & R1[i], & R2[i], & S1[i], & S2[i]);}
+        // fclose(fA);
 
-        sprintf(fAname, "./%s/sv_2_%i.2d", file_name, ii); fA = fopen(fAname, "r");
-        for (int i = 0; i < N; i++) { 
-            fscanf(fA, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf", 
-                &Anew[i], & Qnew[i], & Ah[i], & Qh[i], &R1h[i], & R2h[i], & S1h[i], & S2h[i]);
-        }
-        fclose(fA);
+        // sprintf(fAname, "./%s/sv_2_%i.2d", file_name, ii); fA = fopen(fAname, "r");
+        // for (int i = 0; i < N; i++) { 
+        //     fscanf(fA, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf", 
+        //         &Anew[i], & Qnew[i], & Ah[i], & Qh[i], &R1h[i], & R2h[i], & S1h[i], & S2h[i]);
+        // }
+        // fclose(fA);
     } else { //if not restarting
         if (t == t0 + k && ii == 0) {printf("Second time step\n");}
 
@@ -554,7 +565,7 @@ double Tube::Ps_init(double t, double k, double Period) // FLUID PRESSURE
         else return (0);
 }
 //  ==========================  LEFT BOUNDARY  ==========================
-//  Update of the left boundary at time t. This function uses Q0 to determine the flow rate at the next time-step. From this the value of A is predicted using Lax-Wendroff's numerical scheme. This function is only relevant when the tube is an inlet vessel.
+//  Uate of the left boundary at time t. This function uses Q0 to determine the flow rate at the next time-step. From this the value of A is predicted using Lax-Wendroff's numerical scheme. This function is only relevant when the tube is an inlet vessel.
 
 void Tube::bound_left(int qLnb, double t, double k, double Period) {
     double Pnew = Ps_init(t, k, Period); // FLUID PRESSURE
@@ -592,7 +603,7 @@ double Tube::c(int i, double A) // The wave speed through aorta.
 
 // The matching boundary. // All P quantites should FLP
 void Tube::bound_match(int qLnb, double t, double k, double theta, double gamma, int ID, double t0, char * file_name) {
-    if (t <= 2.0 * Period) {
+    // if (t <= 2.0 * Period) {
         double PA, PV, PAh, PVh; // FLP. Defined ln. 77.
 
         // int j = 1, ok = false, ntrial = 50000, qLnb_1 = qLnb - 1;
@@ -637,9 +648,7 @@ void Tube::bound_match(int qLnb, double t, double k, double theta, double gamma,
                 pvterms_half = pvterms_half +
                     0.5 * (pL[pindex] + pL[pindex1]) * y21[m] +
                     0.5 * ((RD -> pL[pindex]) + (RD -> pL[pindex1])) * y22[m] -
-                    0.5 * (small_vessel_curr + small_vessel_prev) * y21[m]
-                    //                            - 0.5 * (small_vessel_curr + small_vessel_prev) * y21[m] // delete later!
-                    -
+                    0.5 * (small_vessel_curr + small_vessel_prev) * y21[m]-
                     0.5 * (small_vessel_curr + small_vessel_prev) * y22[m];
             }
             paterms = k * paterms;
@@ -790,150 +799,153 @@ void Tube::bound_match(int qLnb, double t, double k, double theta, double gamma,
             printf("Arteries[%i] \n", ID);
             exit(1);
         }
-    }
+    // }
 
-    if (t > 2.0 * Period) {
-        // int qLnb_1 = qLnb + 1;
-        int qLnb_1 = qLnb +  1;
-        // Make sure that qLnb_1 runs in the interval [0:tmstps-1].
-        if (qLnb_1 == (int) tmstps) {qLnb_1 = 0;}
+    // if (t > 2.0 * Period) {
+    //     // int qLnb_1 = qLnb + 1;
+    //     int qLnb_1 = qLnb +  1;
+    //     // Make sure that qLnb_1 runs in the interval [0:tmstps-1].
+    //     if (qLnb_1 == (int) tmstps) {qLnb_1 = 0;}
 
-        double paterms = 0.0, pvterms = 0.0;
-        // double paterms_half = 0.0;
-        // double pvterms_half = 0.0;
-        int M = RD -> N;
-        double RDtheta = k / RD -> h;
+    //     double paterms = 0.0, pvterms = 0.0;
+    //     // double paterms_half = 0.0;
+    //     // double pvterms_half = 0.0;
+    //     int M = RD -> N;
+    //     double RDtheta = k / RD -> h;
 
-        if (t > Period) {
+    //     if (t > Period) {
 
-            char CInameP[20]; sprintf(CInameP, "./%s/PDpL_%i.2d", file_name, ID); FILE * fPD = fopen(CInameP, "r"); // for restartability
-            char CInameR[20]; sprintf(CInameR, "./%s/RDpL_%i.2d", file_name, ID); FILE * fRD = fopen(CInameR, "r"); // for restartability
+    //         char CInameP[20]; sprintf(CInameP, "./%s/pL_%i.2d", file_name, ID); FILE * f = fopen(CInameP, "r"); // for restartability
+    //         char CInameR[20]; sprintf(CInameR, "./%s/RDpL_%i.2d", file_name, ID); FILE * fRD = fopen(CInameR, "r"); // for restartability
 
-            for (int m = 1; m < tmstps; m++) {
-                int pindex = (qLnb_1 + tmstps - m) % tmstps;//,  pindex1 = pindex - 1; if (pindex == 0) { pindex1 = tmstps - 1; }
+    //         for (int m = 1; m < tmstps; m++) {
+    //             int pindex = (qLnb_1 + tmstps - m) % tmstps;//,  pindex1 = pindex - 1; if (pindex == 0) { pindex1 = tmstps - 1; }
 
-                double small_vessel_curr = imp[pindex];//, small_vessel_prev = imp[pindex1];
+    //             double small_vessel_curr = imp[pindex];//, small_vessel_prev = imp[pindex1];
 
-                if (t0 != 0 && t == t0) { //  if restarting, load pL
-                    if (m == 1) {printf("Start reading in pL\n");}
-                    fscanf(fPD, "%lf", & pL[pindex]);fscanf(fRD, "%lf", & RD -> pL[pindex]);
-                }
+    //             if (t0 != 0 && t == t0) { //  if restarting, load pL
+    //                 if (m == 1) {printf("Start reading in pL\n");}
+    //                 fscanf(f, "%lf", & pL[pindex]);fscanf(fRD, "%lf", & RD -> pL[pindex]);
+    //             }
 
-                paterms = paterms + (pL[pindex] - small_vessel_curr) * y11[m] + ((RD -> pL[pindex]) - small_vessel_curr) * y12[m];
-                pvterms = pvterms + (pL[pindex] - small_vessel_curr) * y21[m] + ((RD -> pL[pindex]) - small_vessel_curr) * y22[m];
+    //             paterms = paterms + (pL[pindex] - small_vessel_curr) * y11[m] + ((RD -> pL[pindex]) - small_vessel_curr) * y12[m];
+    //             pvterms = pvterms + (pL[pindex] - small_vessel_curr) * y21[m] + ((RD -> pL[pindex]) - small_vessel_curr) * y22[m];
 
-                // paterms_half = paterms_half + 0.5 * ((pL[pindex] + pL[pindex1]) - (small_vessel_curr + small_vessel_prev)) * y11[m] +
-                //     0.5 * (((RD -> pL[pindex]) + (RD -> pL[pindex1]))- (small_vessel_curr + small_vessel_prev)) * y12[m];
+    //             // paterms_half = paterms_half + 0.5 * ((pL[pindex] + pL[pindex1]) - (small_vessel_curr + small_vessel_prev)) * y11[m] +
+    //             //     0.5 * (((RD -> pL[pindex]) + (RD -> pL[pindex1]))- (small_vessel_curr + small_vessel_prev)) * y12[m];
 
-                // pvterms_half = pvterms_half + 0.5 * ((pL[pindex] + pL[pindex1]) - (small_vessel_curr + small_vessel_prev)) * y21[m] +
-                //     0.5 * (((RD -> pL[pindex]) + (RD -> pL[pindex1])) - (small_vessel_curr + small_vessel_prev)) * y22[m];
-            }
-            fclose(fPD); fclose(fRD);
-            paterms = k * paterms;
-            pvterms = k * pvterms;
-            // paterms_half = k * paterms_half;
-            // pvterms_half = k * pvterms_half;
-        }
-        VecDoub kB(44); // JAM changed 34 --> 38
+    //             // pvterms_half = pvterms_half + 0.5 * ((pL[pindex] + pL[pindex1]) - (small_vessel_curr + small_vessel_prev)) * y21[m] +
+    //             //     0.5 * (((RD -> pL[pindex]) + (RD -> pL[pindex1])) - (small_vessel_curr + small_vessel_prev)) * y22[m];
+    //         }
+    //         fclose(f); fclose(fRD);
+    //         paterms = k * paterms;
+    //         pvterms = k * pvterms;
+    //         // paterms_half = k * paterms_half;
+    //         // pvterms_half = k * pvterms_half;
+    //     }
+    //     VecDoub kB(44); // JAM changed 34 --> 38
 
-        kB[0] = theta;
-        kB[1] = Aold[N] + theta * R1h[N - 1];
-        kB[2] = Qold[N] + theta * R2h[N - 1] + gamma * S2h[N - 1];
-        kB[3] = paterms;
-        kB[4] = k * y11[0];
-        kB[5] = k * y12[0];
-        kB[6] = RD -> Aold[M] + RDtheta * (RD -> R1h[M - 1]);
-        kB[7] = RD -> Qold[M] + RDtheta * (RD -> R2h[M - 1]) + gamma * (RD -> S2h[M - 1]);
-        kB[8] = pvterms;
-        kB[9] = k * y21[0];
-        kB[10] = k * y22[0];
-        kB[11] = kB[3] - 0.5 * Qh[N - 1]; // paterms_half; //
-        kB[12] = Ah[N - 1];
-        kB[13] = RD -> Ah[M - 1];
-        kB[14] = kB[8] - 0.5 * (RD -> Qh[M - 1]); //paterms_half; //
-        kB[15] = gamma;
-        kB[16] = RDtheta;
-        kB[17] = fr[N];
-        kB[18] = A0[N];
-        kB[19] = RD -> fr[M];
-        kB[20] = RD -> A0[M];
-        kB[21] = frh[N + 1];
-        kB[22] = A0h[N + 1];
-        kB[23] = Fr2;
-        kB[24] = -Fcst * M_PI / Re;
-        kB[25] = dfrdr0h[N + 1];
-        kB[26] = dr0dxh[N + 1];
-        kB[27] = r0h[N + 1];
-        kB[28] = M_PI;
-        kB[29] = RD -> frh[M + 1];
-        kB[30] = RD -> A0h[M + 1];
-        kB[31] = RD -> dfrdr0h[M + 1];
-        kB[32] = RD -> dr0dxh[M + 1];
-        kB[33] = RD -> r0h[M + 1];
-        kB[34] = k * y11[0]; // JAM
-        kB[35] = k * y12[0]; // JAM
-        kB[36] = k * y21[0]; // JAM
-        kB[37] = k * y22[0]; // JAM
+    //     kB[0] = theta;
+    //     kB[1] = Aold[N] + theta * R1h[N - 1];
+    //     kB[2] = Qold[N] + theta * R2h[N - 1] + gamma * S2h[N - 1];
+    //     kB[3] = paterms;
+    //     kB[4] = k * y11[0];
+    //     kB[5] = k * y12[0];
+    //     kB[6] = RD -> Aold[M] + RDtheta * (RD -> R1h[M - 1]);
+    //     kB[7] = RD -> Qold[M] + RDtheta * (RD -> R2h[M - 1]) + gamma * (RD -> S2h[M - 1]);
+    //     kB[8] = pvterms;
+    //     kB[9] = k * y21[0];
+    //     kB[10] = k * y22[0];
+    //     kB[11] = kB[3] - 0.5 * Qh[N - 1]; // paterms_half; //
+    //     kB[12] = Ah[N - 1];
+    //     kB[13] = RD -> Ah[M - 1];
+    //     kB[14] = kB[8] - 0.5 * (RD -> Qh[M - 1]); //paterms_half; //
+    //     kB[15] = gamma;
+    //     kB[16] = RDtheta;
+    //     kB[17] = fr[N];
+    //     kB[18] = A0[N];
+    //     kB[19] = RD -> fr[M];
+    //     kB[20] = RD -> A0[M];
+    //     kB[21] = frh[N + 1];
+    //     kB[22] = A0h[N + 1];
+    //     kB[23] = Fr2;
+    //     kB[24] = -Fcst * M_PI / Re;
+    //     kB[25] = dfrdr0h[N + 1];
+    //     kB[26] = dr0dxh[N + 1];
+    //     kB[27] = r0h[N + 1];
+    //     kB[28] = M_PI;
+    //     kB[29] = RD -> frh[M + 1];
+    //     kB[30] = RD -> A0h[M + 1];
+    //     kB[31] = RD -> dfrdr0h[M + 1];
+    //     kB[32] = RD -> dr0dxh[M + 1];
+    //     kB[33] = RD -> r0h[M + 1];
+    //     kB[34] = k * y11[0]; // JAM
+    //     kB[35] = k * y12[0]; // JAM
+    //     kB[36] = k * y21[0]; // JAM
+    //     kB[37] = k * y22[0]; // JAM
 
-        kB[38] = IPP[qLnb];
-        kB[39] = RD -> IPP[qLnb];
+    //     kB[38] = IPP[qLnb];
+    //     kB[39] = RD -> IPP[qLnb];
 
-        kB[40] = IPP[qLnb_1];
-        kB[43] = RD -> IPP[qLnb_1];
+    //     kB[40] = IPP[qLnb_1];
+    //     kB[43] = RD -> IPP[qLnb_1];
 
-        kB[41] = imp[qLnb];
-        kB[42] = imp[qLnb_1];
+    //     kB[41] = imp[qLnb];
+    //     kB[42] = imp[qLnb_1];
 
-        //        printf("%f, %f, %f, %f\n", kB[38], kB[39], kB[40], kB[43]);
-        VecDoub xBb(8);
+    //     //        printf("%f, %f, %f, %f\n", kB[38], kB[39], kB[40], kB[43]);
+    //     VecDoub xBb(8);
 
-        if (t < Period) {
-            xBb[0] = Ah[N - 1];
-            xBb[1] = Qh[N - 1];
-            xBb[2] = Aold[N];
-            xBb[3] = Qold[N];
-            xBb[4] = RD -> Ah[M - 1];
-            xBb[5] = RD -> Qh[M - 1];
-            xBb[6] = RD -> Aold[M];
-            xBb[7] = RD -> Qold[M];
-        }
+    //     if (t < Period) {
+    //         xBb[0] = Ah[N - 1];
+    //         xBb[1] = Qh[N - 1];
+    //         xBb[2] = Aold[N];
+    //         xBb[3] = Qold[N];
+    //         xBb[4] = RD -> Ah[M - 1];
+    //         xBb[5] = RD -> Qh[M - 1];
+    //         xBb[6] = RD -> Aold[M];
+    //         xBb[7] = RD -> Qold[M];
+    //     }
 
-        if (t > Period) {
-            xBb[0] = Aold[N];
-            xBb[1] = Qold[N];
-            xBb[2] = Ah05; //Aold[N];
-            xBb[3] = Qh05; //Qold[N];
-            xBb[4] = RD -> Aold[M];
-            xBb[5] = RD -> Qold[M];
-            xBb[6] = RD -> Ah05; //RD->Aold[M];
-            xBb[7] = RD -> Qh05; //RD->Qold[M];
-        }
+    //     if (t > Period) {
+    //         xBb[0] = Aold[N];
+    //         xBb[1] = Qold[N];
+    //         xBb[2] = Ah05; //Aold[N];
+    //         xBb[3] = Qh05; //Qold[N];
+    //         xBb[4] = RD -> Aold[M];
+    //         xBb[5] = RD -> Qold[M];
+    //         xBb[6] = RD -> Ah05; //RD->Aold[M];
+    //         xBb[7] = RD -> Qh05; //RD->Qold[M];
+    //     }
 
-        bool check;
+    //     bool check;
 
-        newt(xBb, kB, check, vecfunc);
+    //     newt(xBb, kB, check, vecfunc);
 
-        if (check) {
-            cout << "Check is true (convergence to a local minimum)." << endl;
-            cout << "Try another initial guess." << endl;
-        }
+    //     if (check) {
+    //         cout << "Check is true (convergence to a local minimum)." << endl;
+    //         cout << "Try another initial guess." << endl;
+    //     }
 
-        Anew[N] = xBb[0];
-        Qnew[N] = xBb[1];
-        Ah05 = xBb[2];
-        Qh05 = xBb[3];
-        RD -> Anew[M] = xBb[4];
-        RD -> Qnew[M] = xBb[5];
-        RD -> Ah05 = xBb[6];
-        RD -> Qh05 = xBb[7];
-        pL[qLnb_1] = P(qLnb_1, N, Anew[N]); // FLP
-        RD -> pL[qLnb_1] = RD -> P(qLnb_1, M, xBb[4]); // FLP
-    }
+    //     Anew[N] = xBb[0];
+    //     Qnew[N] = xBb[1];
+    //     Ah05 = xBb[2];
+    //     Qh05 = xBb[3];
+    //     RD -> Anew[M] = xBb[4];
+    //     RD -> Qnew[M] = xBb[5];
+    //     RD -> Ah05 = xBb[6];
+    //     RD -> Qh05 = xBb[7];
+    //     pL[qLnb_1] = P(qLnb_1, N, Anew[N]); // FLP
+    //     RD -> pL[qLnb_1] = RD -> P(qLnb_1, M, xBb[4]); // FLP
+    // }
 }
 
 //  The value at the junction point at time t is predicted. NB: This should only be done for tubes that do bifurcate into further branches. If this is not the case we have a terminal vessel and bound_right should be called instead. The procedure operates according to the specifications in the mathematical model as a link between this tube and its daughters. Therefore there will be three tubes involved in this function. One problem is however, that the rather complicated system of equations does not converge for all choices of parameters (the peripheral resistance, the top radius, and the bottom radius).
 
 void Tube::call_junc(int qLnb, double theta, double gamma, Tube * Arteries[], int parent) {
+
+    // cout << "junc called\n";
+
     Tube * D1 = Arteries[parent] -> LD;
     Tube * D2 = Arteries[parent] -> MD;
     Tube * D3 = Arteries[parent] -> RD;
@@ -942,7 +954,6 @@ void Tube::call_junc(int qLnb, double theta, double gamma, Tube * Arteries[], in
     const int ntrial = 4000;
     //    double tol = 1.0e-8;
     double tol = 1.0e-6;
-
     //  check how many daughter vessels are given for each junction to match, and call the appropriate function from junction.c
 
     if (D1 != 0 && D2 == 0 && D3 == 0) {
@@ -963,7 +974,7 @@ double Tube::PL_init(double t, double k, double Period) {
     else return (0);
 }
 
-//  Update of the right boundary at time t. This function uses PL to determine A at the next time-step. From this the value of Q is predicted using Lax-Wendroff's numerical scheme. This function is only relevant when the tube is an outlet vessel.
+//  Uate of the right boundary at time t. This function uses PL to determine A at the next time-step. From this the value of Q is predicted using Lax-Wendroff's numerical scheme. This function is only relevant when the tube is an outlet vessel.
 
 void Tube::bound_right(int qLnb, double t, double k, double Period) {
     double Pnew = PL_init(t, k, Period);
@@ -1000,18 +1011,13 @@ void looper(Tube * Arteries[], double threshold, int plts, double k, int max_its
     for (int i = 0; i < 2; i++) {
         max_pct[i] = 1e+6;
     }
-    FILE * file1;
-    FILE * file2;
-    char name1[100];
-    char name2[100];
+    // FILE * file1;char name1[100]; FILE * file2;char name2[100];
 
     // make file to which we print data
-    const char * nameVessel;
-    FILE * fVessel;
-    char v[100];
-    sprintf(v, "./%s/%s.2d", file_name, file_name);
-    nameVessel = v;
-    fVessel = fopen(nameVessel, "w");
+    const char * nameVessel; FILE * fVessel; char v[100]; 
+    // sprintf(v, "./%s/%s.2d", file_name, file_name); 
+    sprintf(v, "./Outputs/%s_%d.2d", file_name, int(Arteries[0]->SVPA)); 
+    nameVessel = v; fVessel = fopen(nameVessel, "w");
 
     //====================================================================================================
 
@@ -1050,39 +1056,39 @@ void looper(Tube * Arteries[], double threshold, int plts, double k, int max_its
                     matrix_2[ii][sol_ID][0] = Arteries[ii] -> P((int) fmod(tstart / k, tmstps), 0, Arteries[ii] -> Anew[Arteries[ii] -> N]);
                     matrix_2[ii][sol_ID][1] = Arteries[ii] -> Qnew[Arteries[ii] -> N];
 
-                    if (int(tstart / Period) == tstart / Period) {
-                        //  save flow and area data from current and previous time steps in two files // higher res than other save
-                        sprintf(name1, "./%s/sv_1_%i.2d", file_name, ii);
-                        file1 = fopen(name1, "w");
-                        Arteries[ii] -> save1(file1);
-                        fclose(file1);
-                        sprintf(name2, "./%s/sv_2_%i.2d", file_name, ii);
-                        file2 = fopen(name2, "w");
-                        Arteries[ii] -> save2(file1);
-                        fclose(file2);
+                    // if (int(tstart / Period) == tstart / Period) {
+                    //     //  save flow and area data from current and previous time steps in two files // higher res than other save
+                    //     sprintf(name1, "./%s/sv_1_%i.2d", file_name, ii);
+                    //     file1 = fopen(name1, "w");
+                    //     Arteries[ii] -> save1(file1);
+                    //     fclose(file1);
+                    //     sprintf(name2, "./%s/sv_2_%i.2d", file_name, ii);
+                    //     file2 = fopen(name2, "w");
+                    //     Arteries[ii] -> save2(file1);
+                    //     fclose(file2);
 
-                        //  save pressure data for terminal art/vein pairs for the convolution integral
-                        if (Arteries[ii] -> init == 3) {
-                            char namePDpL[100];
-                            sprintf(namePDpL, "./%s/PDpL_%d.2d", file_name, ii);
-                            FILE * fPDpL = fopen(namePDpL, "w");
-                            char nameRDpL[100];
-                            sprintf(nameRDpL, "./%s/RDpL_%d.2d", file_name, ii);
-                            FILE * fRDpL = fopen(nameRDpL, "w");
-                            for (int m = 1; m < tmstps; m++) {
-                                int qLnb = (int) fmod(tstart / k, tmstps);
-                                int qLnb_1 = qLnb + 1;
-                                if (qLnb_1 == (int) tmstps) {
-                                    qLnb_1 = 0;
-                                }
-                                int pindex = (qLnb_1 + tmstps - m) % tmstps;
-                                fprintf(fPDpL, "%20.15f\n", Arteries[ii] -> pL[pindex]);
-                                fprintf(fRDpL, "%20.15f\n", (Arteries[ii] -> RD) -> pL[pindex]);
-                            }
-                            fclose(fPDpL);
-                            fclose(fRDpL);
-                        }
-                    }
+                    //     //  save pressure data for terminal art/vein pairs for the convolution integral
+                    //     if (Arteries[ii] -> init == 3) {
+                    //         char namepL[100];
+                    //         sprintf(namepL, "./%s/pL_%d.2d", file_name, ii);
+                    //         FILE * fpL = fopen(namepL, "w");
+                    //         char nameRDpL[100];
+                    //         sprintf(nameRDpL, "./%s/RDpL_%d.2d", file_name, ii);
+                    //         FILE * fRDpL = fopen(nameRDpL, "w");
+                    //         for (int m = 1; m < tmstps; m++) {
+                    //             int qLnb = (int) fmod(tstart / k, tmstps);
+                    //             int qLnb_1 = qLnb + 1;
+                    //             if (qLnb_1 == (int) tmstps) {
+                    //                 qLnb_1 = 0;
+                    //             }
+                    //             int pindex = (qLnb_1 + tmstps - m) % tmstps;
+                    //             fprintf(fpL, "%20.15f\n", Arteries[ii] -> pL[pindex]);
+                    //             fprintf(fRDpL, "%20.15f\n", (Arteries[ii] -> RD) -> pL[pindex]);
+                    //         }
+                    //         fclose(fpL);
+                    //         fclose(fRDpL);
+                    //     }
+                    // }
                 }
                 tstart = tend;
                 tend = tend + Deltat;
@@ -1150,7 +1156,7 @@ void looper(Tube * Arteries[], double threshold, int plts, double k, int max_its
 
 }
 
-//  Solves the non-linear PDE's (momentum and continuity eqn's.) from t = tstart to t= tend. This function checks the maximal possible size of the next time-step, reduces it to make sure that we don't walk to far, and takes the next step. This is done by executing the step routine, then updating the left boundary and finally updating bifurcation points and the right boundaries. This is carried out as long as the time hasn't passed the desired ending time (tend) which is passed to the function as a parameter.
+//  Solves the non-linear E's (momentum and continuity eqn's.) from t = tstart to t= tend. This function checks the maximal possible size of the next time-step, reduces it to make sure that we don't walk to far, and takes the next step. This is done by executing the step routine, then uating the left boundary and finally uating bifurcation points and the right boundaries. This is carried out as long as the time hasn't passed the desired ending time (tend) which is passed to the function as a parameter.
 
 void solver(Tube * Arteries[], double tstart, double tend, double k, double t0, char * file_name) {
     // The following definitions only used with variable time-stepping
@@ -1184,7 +1190,7 @@ void solver(Tube * Arteries[], double tstart, double tend, double k, double t0, 
             Arteries[i] -> step(k, i, t, t0, file_name);
         }
 
-        // Update left and right boundaries, and the bifurcation points.
+        // Uate left and right boundaries, and the bifurcation points.
         for (int i = 0; i < nbrves; i++) {
             if (Arteries[i] -> init == 1) {
                 Arteries[i] -> bound_left(qLnb, t + k, k, Period);
@@ -1196,12 +1202,20 @@ void solver(Tube * Arteries[], double tstart, double tend, double k, double t0, 
                 double theta = k / Arteries[i] -> h, gamma = k / 2.0;
                 Arteries[i] -> bound_match(qLnb, t, k, theta, gamma, i, t0, file_name);
             }
+
+
             if (Arteries[i] -> rm == 0) {
+
                 double theta = k / Arteries[i] -> h, gamma = k / 2.0;
                 Arteries[i] -> call_junc(qLnb, theta, gamma, Arteries, i);
+                // cout << i << "\n";
+                // exit(11);
             };
+
+
+
         }
-        t = t + k; // Update the time and position within one period.
+        t = t + k; // Uate the time and position within one period.
         qLnb = (qLnb + 1) % tmstps;
     }
 }
