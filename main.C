@@ -22,7 +22,7 @@ using namespace std;
 int main(int argc, char * argv[]) {
     int gridPts, LVPA = 0, max_its, num_to_save;
     double SVPA;
-    int id;
+    // int id;
     
     
     double rm, f3, fa3, threshold;
@@ -55,14 +55,14 @@ int main(int argc, char * argv[]) {
     // inflow = atoi(argv[2]);
     tree = argv[1]; // select the tree to make
     SVPA = atof(argv[2]);
-    id = atoi(argv[2]);
+    // id = atoi(argv[2]);
 
 
     // if (t0 < 2.0) {t0 = 0.0;} // if fewer than two periods have been run, just start from 0
     // t0 = t0*Period;
 
     // can also be set in the header file or via command line args
-    gridPts = 10, f3 = 2.53*pow(10, 6), fa3 = 1.03*pow(10, 6), threshold =  10.0 ,max_its = 100,num_to_save = 1; 
+    gridPts = 10, f3 = 2.53*pow(10, 6), fa3 = 1.03*pow(10, 6), threshold =  10.0 ,max_its = 1,num_to_save = 1; 
     rm = 0.002;
     
     // set the rest of the stiffnesses.
@@ -77,19 +77,22 @@ int main(int argc, char * argv[]) {
     for (int i = 0; i < 24; i++) ftrif[i] = new double[24];
 
     clock_t c1 = clock(); // Only used when timing the program.
-    mkdir(tree, S_IRWXU); // make a dir to keep the outputs for this tree
+    // mkdir(tree, S_IRWXU); // make a dir to keep the outputs for this tree
     
     // ==================================================================================================
     // tell the user smth useful.
     cout << "Loading the tree in " << tree <<".\n\n"
     << "gridPts = " << gridPts <<  ", f3 = " << f3 << ", fa3 = "<< fa3 << ", threshold = " << threshold << "\n"
-    << "Start from t0 = "<< t0/Period * Tper << ".\n";
+    << "SVPA =  "<< SVPA << ".\n";
     // ==================================================================================================
     // Make the objects of class Tube from a file // JAM
     char str[20]; int char_count = 0; FILE * treefile;
 
     // char fName [200]; sprintf(fName, "./NewSumTab/%s.txt", tree); treefile = fopen(fName, "r");
+    
     char fName [200]; sprintf(fName, "./NewSumTab/%s.tsv", tree); treefile = fopen(fName, "r");
+
+    // char fName [200]; sprintf(fName, "%s", tree); treefile = fopen(fName, "r");
     
 
     // set nbrves and make enough tubes
@@ -119,15 +122,16 @@ int main(int argc, char * argv[]) {
         for (int j = 0; j <= 6; j++)
         {
             if (int(array[ii][j]) == array[ii][j])
-            {printf("%d, ", int(array[ii][j]));}
-            else    {printf("%3.2f,\t", array[ii][j]);}
+            {cout << int(array[ii][j]) << "\t";}
+            else    {cout << array[ii][j] << "\t";}
         } // print vessels specs to terminal
 
         //  Parameters required to initiate class Tube (Length,topradius,botradius,LeftDaughter,MidDaughter,RightDaughter,rmin, grid points,
         //                                              init,f1,f2,f3,fa1,fa2,fa3,fv1,fv2,fv3,asym,expo,lrrA,lrrV,SVPA,LVPA);
         
         //  the summary table tsv file has columns
-        //  index, length, toprad, botrad, LD, MD, RD, rm, init
+        //  index, length, toprad, botrad, LD, MD, RD, init
+        //  only arterial inlet and venous outlet need to be given init values -- the rest are automated
             double rm_val;
             if (int(array[ii][4]) != 0){rm_val =0;}else {rm_val = rm;}
             double init_val;
@@ -137,10 +141,10 @@ int main(int argc, char * argv[]) {
 
             Arteries[int(array[ii][0])] = new Tube(array[ii][1], array[ii][2], array[ii][3], Arteries[int(array[ii][4])], Arteries[int(array[ii][5])], Arteries[int(array[ii][6])],rm_val,  gridPts,  init_val, f1, f2, f3, fa1, fa2, fa3, fv1, fv2, fv3, asym, expo, lrrA, lrrV, SVPA, LVPA);
             
-            printf("rm = %4.3f\t", Arteries[int(array[ii][0])]->rm);
-            printf("init = %d\t", Arteries[int(array[ii][0])]->init);
-
-        printf("ves: %i\n", ii);
+            if (rm_val == 0){cout << "rm = " << Arteries[int(array[ii][0])]->rm << "\t\t";}
+            else{cout << "rm = " << Arteries[int(array[ii][0])]->rm << "\t";}
+            
+            cout << "init = "<<Arteries[int(array[ii][0])]->init<<"\n";
     }
     printf("\nVessels are made\n\n");
 
@@ -151,6 +155,7 @@ int main(int argc, char * argv[]) {
     // printf("rm = %f\n",Arteries[nbrves-1]->rm);
 
     // exit(1);
+    
 
     looper(Arteries, threshold, plts, k, max_its, num_to_save, tree, t0); // run the model and loop until convergence occurs
     

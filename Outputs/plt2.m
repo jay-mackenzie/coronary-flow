@@ -1,7 +1,8 @@
-out100 = load("test2_100.2d");
-out0 = load("test2_0.2d");
+% out100 = load("test2_100.2d");
+% out0 = load("test2_0.2d");
+out100 = load("850trif_100.2d");
 %%
-for o = {out0, out100}
+for o = {out100}
     out = o{1};
     for i = unique(out(:, 1))'
         tmp = out(out(:, 1) == i, 2:end);
@@ -13,7 +14,7 @@ for o = {out0, out100}
         leg = {};
         c = 1;
         figure(floor(i)+1)
-        for j = x(end) % space
+        for j = x%(end) % space
             tmp2 = tmp(tmp(:, 2) == j, 3:end);
             for k = 1:3
                 subplot(1, 3, k); hold on

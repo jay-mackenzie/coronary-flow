@@ -1024,6 +1024,7 @@ void looper(Tube * Arteries[], double threshold, int plts, double k, int max_its
     if (t0 == 0) {
         cout << "start first solve\n";
 
+
         while (tend <= period_counter * Period) {
             solver(Arteries, tstart, tend, k, t0, file_name);
             for (int ii = 0; ii < nbrves; ii++) {
@@ -1035,6 +1036,8 @@ void looper(Tube * Arteries[], double threshold, int plts, double k, int max_its
             sol_ID++; // advance one step
         }
         cout << "end first solve\n";
+
+
 
         //====================================================================================================
 
@@ -1109,9 +1112,9 @@ void looper(Tube * Arteries[], double threshold, int plts, double k, int max_its
 
             memcpy(matrix_1, matrix_2, sizeof(matrix_2)); // replace previous period's matrix with the current period's
 
-            cout << "completed periods: " << period_counter << "\n";
-            cout << "Pressure:     pct max diff: " << max_pct[0] << "\n";
-            cout << "Flow:         pct max diff: " << max_pct[1] << "\n\n\n";
+            cout << "completed periods\t\t: " << period_counter << "\n";
+            cout << "Pressure:\tpct max diff\t: " << max_pct[0] << "\n";
+            cout << "Flow:\t\tpct max diff\t: " << max_pct[1] << "\n\n\n";
 
             if (period_counter == max_its) {
                 max_pct[0] = 0.0;
@@ -1182,36 +1185,42 @@ void solver(Tube * Arteries[], double tstart, double tend, double k, double t0, 
                 error("arteries.C", "Time-step size too large\n CFL-condition violated\n Now exiting.\n");
                 //                exit(2); // suppress exit
             }
+            // cout << "1\n";
         }
 
         // solve for interior points, by calling step.
         // for (int i = 0; i < nbrves; i++) {Arteries[i] -> step(k, t0);}
         for (int i = 0; i < nbrves; i++) {
             Arteries[i] -> step(k, i, t, t0, file_name);
+            // cout << "2\n";
         }
 
         // Uate left and right boundaries, and the bifurcation points.
         for (int i = 0; i < nbrves; i++) {
+            // cout << "Arteries "<<i<<"\n";
+            // cout << "Arteries["<<i<<"] -> init = " << Arteries[i] -> init<< "\n";
+            // cout << "Arteries["<<i<<"] -> rm = " << Arteries[i] -> rm<< "\n";
             if (Arteries[i] -> init == 1) {
                 Arteries[i] -> bound_left(qLnb, t + k, k, Period);
+                // cout << "3\n";
             };
             if (Arteries[i] -> init == 2) {
                 Arteries[i] -> bound_right(qLnb, t + k, k, Period);
+                // cout << "4\n";
             };
             if (Arteries[i] -> init == 3) {
                 double theta = k / Arteries[i] -> h, gamma = k / 2.0;
                 Arteries[i] -> bound_match(qLnb, t, k, theta, gamma, i, t0, file_name);
+                // cout << "5\n";
             }
-
-
+            
             if (Arteries[i] -> rm == 0) {
-
                 double theta = k / Arteries[i] -> h, gamma = k / 2.0;
                 Arteries[i] -> call_junc(qLnb, theta, gamma, Arteries, i);
                 // cout << i << "\n";
                 // exit(11);
+                // cout << "6\n";
             };
-
 
 
         }
