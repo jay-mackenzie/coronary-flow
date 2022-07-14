@@ -1,20 +1,20 @@
-550trif.tsv -- broken but IDK why
-650trif.tsv
-750trif.tsv
-800bif.tsv
-800mt.tsv
-800series.tsv
-800trif.tsv
-850full.tsv
-850ser.tsv
+550trif.tsv -- seg fault in solver
+800bif.tsv -- seg fault
+800mt.tsv -- seg fault
+800series.tsv -- root not found in the matching
+800trif.tsv -- seg fault
+850full.tsv -- seg fault
+850veins.tsv -- seg fault
+kassab.tsv -- seg fault
+less.tsv -- seg fault
+newfull.tsv -- seg fault
+scott.tsv -- seg fault
+
+650trif.tsv -- works
+750trif.tsv -- works
+850ser.tsv -- works
 850trif.tsv -- works
-850veins.tsv
-delay850.tsv
-full.tsv
-kassab.tsv
-less.tsv
-newfull.tsv
-scottOld.tsv
-scott.tsv
-test2.tsv
-test.tsv
+delay850.tsv -- works
+full.tsv -- works
+scottOld.tsv -- works
+test.tsv -- works

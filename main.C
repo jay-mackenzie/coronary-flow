@@ -90,9 +90,8 @@ int main(int argc, char * argv[]) {
 
     // char fName [200]; sprintf(fName, "./NewSumTab/%s.txt", tree); treefile = fopen(fName, "r");
     
-    char fName [200]; sprintf(fName, "./NewSumTab/%s.tsv", tree); treefile = fopen(fName, "r");
-
-    // char fName [200]; sprintf(fName, "%s", tree); treefile = fopen(fName, "r");
+    // char fName [200]; sprintf(fName, "./NewSumTab/%s.tsv", tree); treefile = fopen(fName, "r");
+    char fName [200]; sprintf(fName, "%s", tree); treefile = fopen(fName, "r");
     
 
     // set nbrves and make enough tubes
@@ -136,10 +135,40 @@ int main(int argc, char * argv[]) {
             if (int(array[ii][4]) != 0){rm_val =0;}else {rm_val = rm;}
             double init_val;
             if (int(array[ii][4]) == 0 && int(array[ii][6]) != 0){init_val =3;} else{init_val =  array[ii][7];}
+            
+            // if (rm_val == 0){cout << "rm = " << Arteries[int(array[ii][0])]->rm << "\t\t";}
+            // else{cout << "rm = " << Arteries[int(array[ii][0])]->rm << "\t";}
+            
+            // cout << "init = "<<Arteries[int(array[ii][0])]->init<<"\n";
+
+            // cout << "rm = "<<rm_val<<"\n";
+            // cout << "rm = "<<rm<<"\n";
 
 
 
-            Arteries[int(array[ii][0])] = new Tube(array[ii][1], array[ii][2], array[ii][3], Arteries[int(array[ii][4])], Arteries[int(array[ii][5])], Arteries[int(array[ii][6])],rm_val,  gridPts,  init_val, f1, f2, f3, fa1, fa2, fa3, fv1, fv2, fv3, asym, expo, lrrA, lrrV, SVPA, LVPA);
+            //  in order, handle trifs
+            if (int(array[ii][4]) != 0 && int(array[ii][5]) != 0 && int(array[ii][6])!=0)
+            {
+                Arteries[int(array[ii][0])] = new Tube(array[ii][1], array[ii][2], array[ii][3], Arteries[int(array[ii][4])],Arteries[int(array[ii][5])], Arteries[int(array[ii][6])],rm_val,  gridPts,  init_val, f1, f2, f3, fa1, fa2, fa3, fv1, fv2, fv3, asym, expo, lrrA, lrrV, SVPA, LVPA);
+            }
+            else if (int(array[ii][4]) != 0 && int(array[ii][5]) == 0 && int(array[ii][6])!=0)
+            {
+                Arteries[int(array[ii][0])] = new Tube(array[ii][1], array[ii][2], array[ii][3], Arteries[int(array[ii][4])],0, Arteries[int(array[ii][6])],rm_val,  gridPts,  init_val, f1, f2, f3, fa1, fa2, fa3, fv1, fv2, fv3, asym, expo, lrrA, lrrV, SVPA, LVPA);
+            }
+            else if (int(array[ii][4]) != 0 && int(array[ii][5]) == 0 && int(array[ii][6])==0)
+            {
+                Arteries[int(array[ii][0])] = new Tube(array[ii][1], array[ii][2], array[ii][3], Arteries[int(array[ii][4])],0, 0,rm_val,  gridPts,  init_val, f1, f2, f3, fa1, fa2, fa3, fv1, fv2, fv3, asym, expo, lrrA, lrrV, SVPA, LVPA);
+            }
+            else if (int(array[ii][4]) == 0 && int(array[ii][5]) == 0 && int(array[ii][6])!=0)
+            {
+                Arteries[int(array[ii][0])] = new Tube(array[ii][1], array[ii][2], array[ii][3], 0,0, Arteries[int(array[ii][6])],rm_val,  gridPts,  init_val, f1, f2, f3, fa1, fa2, fa3, fv1, fv2, fv3, asym, expo, lrrA, lrrV, SVPA, LVPA);
+            }
+            else if (int(array[ii][4]) == 0 && int(array[ii][5]) == 0 && int(array[ii][6])==0)
+            {
+                Arteries[int(array[ii][0])] = new Tube(array[ii][1], array[ii][2], array[ii][3], 0,0, 0,rm_val,  gridPts,  init_val, f1, f2, f3, fa1, fa2, fa3, fv1, fv2, fv3, asym, expo, lrrA, lrrV, SVPA, LVPA);
+            }
+            
+            // Arteries[int(array[ii][0])] = new Tube(array[ii][1], array[ii][2], array[ii][3], Arteries[int(array[ii][4])], Arteries[int(array[ii][5])], Arteries[int(array[ii][6])],rm_val,  gridPts,  init_val, f1, f2, f3, fa1, fa2, fa3, fv1, fv2, fv3, asym, expo, lrrA, lrrV, SVPA, LVPA);
             
             if (rm_val == 0){cout << "rm = " << Arteries[int(array[ii][0])]->rm << "\t\t";}
             else{cout << "rm = " << Arteries[int(array[ii][0])]->rm << "\t";}
@@ -147,8 +176,6 @@ int main(int argc, char * argv[]) {
             cout << "init = "<<Arteries[int(array[ii][0])]->init<<"\n";
     }
     printf("\nVessels are made\n\n");
-
-    // exit(1);
 
     // ===================================================================================================================================================
     

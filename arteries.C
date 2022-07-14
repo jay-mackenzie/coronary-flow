@@ -949,6 +949,9 @@ void Tube::call_junc(int qLnb, double theta, double gamma, Tube * Arteries[], in
     Tube * D1 = Arteries[parent] -> LD;
     Tube * D2 = Arteries[parent] -> MD;
     Tube * D3 = Arteries[parent] -> RD;
+
+    // cout << "daughters pointed to\n";
+
     int j = 1;
     int ok = false;
     const int ntrial = 4000;
@@ -957,10 +960,15 @@ void Tube::call_junc(int qLnb, double theta, double gamma, Tube * Arteries[], in
     //  check how many daughter vessels are given for each junction to match, and call the appropriate function from junction.c
 
     if (D1 != 0 && D2 == 0 && D3 == 0) {
+        // cout << "mono in\n";
         monofurcation(qLnb, theta, gamma, Arteries, parent, ntrial, tol, j, ok);
+        // cout << "mono out\n";
     } else if (D1 != 0 && D2 == 0 && D3 != 0) {
+        // cout << "bif in\n";
         bifurcation(qLnb, theta, gamma, Arteries, parent, ntrial, tol, j, ok);
+        // cout << "bif out\n";
     } else if (D1 != 0 && D2 != 0 && D3 != 0) {
+        // cout << "daughters pointed to\n";
         trifurcation(qLnb, theta, gamma, Arteries, parent, ntrial, tol, j, ok);
     }
 }
@@ -1129,7 +1137,8 @@ void looper(Tube * Arteries[], double threshold, int plts, double k, int max_its
         //====================================================================================================
 
         //  after convergence, run a given number of extra times, and save
-        cout << "Start saving\n";
+        cout << "Start saving\nNow exiting\n";
+        exit(1);
         while (tend <= (period_counter + num_to_save) * Period) {
             solver(Arteries, tstart, tend, k, t0, file_name);
             for (int j = 0; j < nbrves; j++) {
@@ -1185,44 +1194,31 @@ void solver(Tube * Arteries[], double tstart, double tend, double k, double t0, 
                 error("arteries.C", "Time-step size too large\n CFL-condition violated\n Now exiting.\n");
                 //                exit(2); // suppress exit
             }
-            // cout << "1\n";
         }
 
         // solve for interior points, by calling step.
         // for (int i = 0; i < nbrves; i++) {Arteries[i] -> step(k, t0);}
         for (int i = 0; i < nbrves; i++) {
             Arteries[i] -> step(k, i, t, t0, file_name);
-            // cout << "2\n";
         }
 
-        // Uate left and right boundaries, and the bifurcation points.
+        // Update left and right boundaries, and the bifurcation points.
         for (int i = 0; i < nbrves; i++) {
-            // cout << "Arteries "<<i<<"\n";
-            // cout << "Arteries["<<i<<"] -> init = " << Arteries[i] -> init<< "\n";
-            // cout << "Arteries["<<i<<"] -> rm = " << Arteries[i] -> rm<< "\n";
             if (Arteries[i] -> init == 1) {
-                Arteries[i] -> bound_left(qLnb, t + k, k, Period);
-                // cout << "3\n";
+                Arteries[i] -> bound_left(qLnb, t + k, k, Period);                
             };
             if (Arteries[i] -> init == 2) {
                 Arteries[i] -> bound_right(qLnb, t + k, k, Period);
-                // cout << "4\n";
             };
             if (Arteries[i] -> init == 3) {
                 double theta = k / Arteries[i] -> h, gamma = k / 2.0;
                 Arteries[i] -> bound_match(qLnb, t, k, theta, gamma, i, t0, file_name);
-                // cout << "5\n";
             }
             
             if (Arteries[i] -> rm == 0) {
                 double theta = k / Arteries[i] -> h, gamma = k / 2.0;
                 Arteries[i] -> call_junc(qLnb, theta, gamma, Arteries, i);
-                // cout << i << "\n";
-                // exit(11);
-                // cout << "6\n";
-            };
-
-
+            }
         }
         t = t + k; // Uate the time and position within one period.
         qLnb = (qLnb + 1) % tmstps;
