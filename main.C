@@ -62,7 +62,7 @@ int main(int argc, char * argv[]) {
     // t0 = t0*Period;
 
     // can also be set in the header file or via command line args
-    gridPts = 10, f3 = 2.53*pow(10, 6), fa3 = 1.03*pow(10, 6), threshold =  10.0 ,max_its = 1,num_to_save = 1; 
+    gridPts = 10, f3 = 2.53*pow(10, 6), fa3 = 1.03*pow(10, 6), threshold =  100.0 ,max_its = 100,num_to_save = 1; 
     rm = 0.002;
     
     // set the rest of the stiffnesses.
@@ -88,10 +88,24 @@ int main(int argc, char * argv[]) {
     // Make the objects of class Tube from a file // JAM
     char str[20]; int char_count = 0; FILE * treefile;
 
-    // char fName [200]; sprintf(fName, "./NewSumTab/%s.txt", tree); treefile = fopen(fName, "r");
     
-    // char fName [200]; sprintf(fName, "./NewSumTab/%s.tsv", tree); treefile = fopen(fName, "r");
-    char fName [200]; sprintf(fName, "%s", tree); treefile = fopen(fName, "r");
+    
+    char fName [200]; 
+    
+    bool exclamationCheck = 0;
+    if(strchr(tree, '/') != NULL)
+    {
+        sprintf(fName, "%s", tree);
+    }
+    else
+    {
+        sprintf(fName, "./NewSumTab/%s.tsv", tree);
+    }
+    
+    
+    treefile = fopen(fName, "r");
+    
+    // char fName [200];  treefile = fopen(fName, "r");
     
 
     // set nbrves and make enough tubes

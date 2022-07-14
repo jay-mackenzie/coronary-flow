@@ -1138,7 +1138,7 @@ void looper(Tube * Arteries[], double threshold, int plts, double k, int max_its
 
         //  after convergence, run a given number of extra times, and save
         cout << "Start saving\nNow exiting\n";
-        exit(1);
+        // exit(1);
         while (tend <= (period_counter + num_to_save) * Period) {
             solver(Arteries, tstart, tend, k, t0, file_name);
             for (int j = 0; j < nbrves; j++) {
