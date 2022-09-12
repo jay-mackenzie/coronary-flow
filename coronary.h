@@ -28,8 +28,9 @@ const char*  CO_filename    = "MynardSmolichLong.dat";   // Input flow file at t
 const char*  small_filename    = "ExtPLong.dat";   // Input flow file at the heart. //
 //**************************************************************************/
 // global parameters
-double Tper = 0.70; // The period of one heart beat [s].
-int plts = 64; // Number of plots per period.
+double Tper = 1.1; // The period of one heart beat [s].
+// double Tper = 0.7; // The period of one heart beat [s].
+int plts = 128; // Number of plots per period.
 double asym = 0.41, expo = 2.76, lrrA = 36, lrrV = 36; // structured tree params.
 bool verbosity = 0;
 double Lr  = 0.25;                  // characteristic vessel radius [cm].

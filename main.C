@@ -62,7 +62,7 @@ int main(int argc, char * argv[]) {
     // t0 = t0*Period;
 
     // can also be set in the header file or via command line args
-    gridPts = 10, f3 = 2.53*pow(10, 6), fa3 = 1.03*pow(10, 6), threshold =  100.0 ,max_its = 100,num_to_save = 1; 
+    gridPts = 10, f3 = 2.53*pow(10, 6), fa3 = 1.03*pow(10, 6), threshold =  10.0 ,max_its = 100,num_to_save = 1; 
     rm = 0.002;
     
     // set the rest of the stiffnesses.
