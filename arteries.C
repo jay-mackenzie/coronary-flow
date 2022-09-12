@@ -218,7 +218,7 @@ Tube::Tube(double Length,
             //  Pressure applied to SMALL vessels
             imp = new double[tmstps + 1];
             RD -> imp = new double[tmstps + 1];
-            FILE * fii = fopen(small_filename, "r");
+            FILE * fii = fopen("ExtPress.dat", "r");
             for (int i = 0; i <= tmstps; i++) {
                 fscanf(fii, "%lf", & imp[i]);
                 imp[i] = SVPA * imp[i] * conv / rho / g / Lr; // from file
