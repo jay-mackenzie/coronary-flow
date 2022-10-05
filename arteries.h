@@ -160,27 +160,46 @@ public:
   //  In order to ensure a more efficient execution of the program the following functions is made as in-line functions.
 
 //  A function returning the Friction of the system. The definition of this function is given according to the derivation in the mathematical model. The constant cst, determines the amount of damping in the system.
-inline double F (double Q, double A)
-{
-    double tmp1 = -2.0*sqrt(M_PI)*Q;
-    double tmp2 = bound_thick*Re*sqrt(A);
-    return(tmp1/tmp2);
-  // return(-Fcst*M_PI*Q/(A*Re));
-}
+// inline double F (double Q, double A)
+// {
+//     double tmp1 = -2.0*sqrt(M_PI)*Q;
+//     double tmp2 = bound_thick*Re*sqrt(A);
+//     return(tmp1/tmp2);
+//   // return(-Fcst*M_PI*Q/(A*Re));
+// }
 
-inline double dFdQ (double A)
-{
-    double tmp1 = -2.0*sqrt(M_PI);
-    double tmp2 = bound_thick*Re*sqrt(A);
-    return(tmp1/tmp2);
-}
+// inline double dFdQ (double A)
+// {
+//     double tmp1 = -2.0*sqrt(M_PI);
+//     double tmp2 = bound_thick*Re*sqrt(A);
+//     return(tmp1/tmp2);
+// }
 
-inline double dFdA (double Q, double A)
-{
-    double tmp1 = Q*sqrt(M_PI);
-    double tmp2 = bound_thick*Re*sqrt(cu(A));
-    return(tmp1/tmp2);
-}
+// inline double dFdA (double Q, double A)
+// {
+//     double tmp1 = Q*sqrt(M_PI);
+//     double tmp2 = bound_thick*Re*sqrt(cu(A));
+//     return(tmp1/tmp2);
+// }
+
+     inline double F (double Q, double A)
+   {
+     double tmp1 = Fcst*M_PI*Q;
+     double tmp2 = A*Re;
+     double tmp3 = -tmp1/tmp2;
+     return(tmp3);
+     // return(-Fcst*M_PI*Q/(A*Re));
+   }
+
+   inline double dFdQ (double A)
+   {
+     return(-Fcst*M_PI/(A*Re));
+   }
+
+   inline double dFdA (double Q, double A)
+   {
+     return(Fcst*M_PI*Q/((A*A)*Re));
+   }
 
 private:
   // The private function Q0 may only be accessed from the left boundary

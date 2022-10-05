@@ -139,7 +139,7 @@ Tube::Tube(double Length,
         //  =================  PRESSURE AS INLET CONDITION  =================
         if (init == 1) {
             Ps = new double[tmstps + 1];
-            FILE * fi = fopen("corPress_scott.dat", "r"); // Reading in pressure
+            FILE * fi = fopen(CO_filename, "r"); // Reading in pressure
             for (int i = 0; i <= tmstps; i++) {
                 fscanf(fi, "%lf", & Ps[i]);
                 Ps[i] = (Ps[i]) * conv / rho / g / Lr; // non-dimensionalise if required
@@ -156,13 +156,19 @@ Tube::Tube(double Length,
         }
         //  ==================================================================
 
+        //  sinusoidal pressure profile applied to large vessels
+        IPP = new double[tmstps + 1];
+        for (int i = 0; i <= tmstps; i++) {
+            IPP[i] = 0 ;//* sin(i * 2 * M_PI / tmstps) * conv / rho / g / Lr; // sinusoidal
+        }
+
         //  In case of an end-tube evaluate the impedances for the boundary condition. This is done by calling the f90 routine root_imp which calculates the impedance at the root of a structured tree. The underscores is sensitive to the compiler but can be seen at the bottom of the file root_imp.o.
 
         if (init == 3) {
             //  Pressure applied to SMALL vessels
             imp = new double[tmstps + 1];
             RD -> imp = new double[tmstps + 1];
-            FILE * fii = fopen("ExtPress.dat", "r");
+            FILE * fii = fopen(small_filename, "r");
             for (int i = 0; i <= tmstps; i++) {
                 fscanf(fii, "%lf", & imp[i]);
                 imp[i] = SVPA * imp[i] * conv / rho / g / Lr; // from file
@@ -231,7 +237,8 @@ void Tube::printPxt(FILE * fd, double t, int offset, int sim_time, int vessel_id
             t * Lr3 / q, // time
             (i + offset) * h * Lr, // space
             (P(sim_time, i, Anew[i]) + p0) * rho * g * Lr / conv, //flp
-            Qnew[i] * q// flow
+            Qnew[i] * q, // flow
+            (P(sim_time, i, Anew[i]) + p0 - IPP[sim_time]) * rho * g * Lr / conv // tmp
             );
 
 
@@ -248,7 +255,7 @@ void Tube::printPxt(FILE * fd, double t, int offset, int sim_time, int vessel_id
 //  Further print functions can be added, and they would look similar to the two functions above!  The next function returns the pressure p as a function of a fixed x, and the corresponding cross-sectional area A. The pressure is defined according to the  mathematical model, described in IMFUFATEKST no 297, and D2.1-4.
 
 double Tube::P(int qLnb, int i, double A) {
-    double pold = fr[i] * (sqrt(A / A0[i]) - 1.0);
+    double pold = fr[i] * (sqrt(A / A0[i]) - 1.0) + IPP[qLnb];
     // FLP iff A(TMP) Nov. 19.
 
     return pold;
@@ -384,12 +391,6 @@ void Tube::step(double k, int ii, double t, double t0, char * file_name) {
     double theta = k / h; // Theta is determined.
     double gamma = 0.5 * k; // Gamma is determined.
 
-<<<<<<< HEAD
-    if (t0 != 0 && t == t0) {
-        if (ii == 0) {printf("restarting\n");}
-    } else { //if not restarting
-        if (t == t0 + k && ii == 0) {printf("Second time step\n");}
-=======
 
     for (int i = 0; i <= N; i++) {
         // Remember the values at this time level.
@@ -402,7 +403,6 @@ void Tube::step(double k, int ii, double t, double t0, char * file_name) {
         S1[i] = Svec(1, i, 0, Qold[i], Aold[i]);
         S2[i] = Svec(2, i, 0, Qold[i], Aold[i]);
     }
->>>>>>> 1e24bf6 (many changes -- mostly to data)
 
     for (int i = 0; i < N; i++) {
         Ah[i] = 0.5 * (Aold[i + 1] + Aold[i]) - 0.5 * theta * (R1[i + 1] - R1[i]) + 0.5 * gamma * (S1[i + 1] + S1[i]);
@@ -442,13 +442,13 @@ void Tube::bound_left(int qLnb, double t, double k, double Period) {
         printf("t/k negative in bound_right\n");
     }
 
-    Anew[0] = A0[0] * (sq(((Pnew) / fr[0]) + 1.0));
+    Anew[0] = A0[0] * (sq(((Pnew - IPP[qLnb]) / fr[0]) + 1.0));
 
     double A05;
     if (qLnb == 0) {
-        A05 = A0[0] * (sq(((P05) / fr[0]) + 1.0));
+        A05 = A0[0] * (sq(((P05 - IPP[qLnb]) / fr[0]) + 1.0));
     } else if (qLnb != 0) {
-        A05 = A0[0] * (sq(((P05) / fr[0]) + 1.0));
+        A05 = A0[0] * (sq(((P05 - 0.5 * (IPP[qLnb] + IPP[qLnb - 1])) / fr[0]) + 1.0));
     } //  if statements ensure that qLnb in the range [0, tmstps]
 
     double Ahm05 = 2.0 * A05 - Ah[0];
@@ -470,10 +470,11 @@ double Tube::c(int i, double A) // The wave speed through aorta.
 
 // The matching boundary. // All P quantites should FLP
 void Tube::bound_match(int qLnb, double t, double k, double theta, double gamma, int ID, double t0, char * file_name) {
+    // if (t <= 2.0 * Period) {
         double PA, PV, PAh, PVh; // FLP. Defined ln. 77.
 
         // int j = 1, ok = false, ntrial = 50000, qLnb_1 = qLnb - 1;
-        int j = 1, ok = false, ntrial = 5000, qLnb_1 = qLnb + 1;
+        int j = 1, ok = false, ntrial = 50000, qLnb_1 = qLnb + 1;
  
         // Make sure that qLnb_1 runs in the interval [0:tmstps-1].
         if (qLnb_1 == (int) tmstps) {qLnb_1 = 0;}
@@ -668,21 +669,31 @@ void Tube::bound_match(int qLnb, double t, double k, double theta, double gamma,
 
 void Tube::call_junc(int qLnb, double theta, double gamma, Tube * Arteries[], int parent) {
 
+    // cout << "junc called\n";
+
     Tube * D1 = Arteries[parent] -> LD;
     Tube * D2 = Arteries[parent] -> MD;
     Tube * D3 = Arteries[parent] -> RD;
 
+    // cout << "daughters pointed to\n";
+
     int j = 1;
     int ok = false;
     const int ntrial = 4000;
+    //    double tol = 1.0e-8;
     double tol = 1.0e-6;
     //  check how many daughter vessels are given for each junction to match, and call the appropriate function from junction.c
 
     if (D1 != 0 && D2 == 0 && D3 == 0) {
+        // cout << "mono in\n";
         monofurcation(qLnb, theta, gamma, Arteries, parent, ntrial, tol, j, ok);
+        // cout << "mono out\n";
     } else if (D1 != 0 && D2 == 0 && D3 != 0) {
+        // cout << "bif in\n";
         bifurcation(qLnb, theta, gamma, Arteries, parent, ntrial, tol, j, ok);
+        // cout << "bif out\n";
     } else if (D1 != 0 && D2 != 0 && D3 != 0) {
+        // cout << "daughters pointed to\n";
         trifurcation(qLnb, theta, gamma, Arteries, parent, ntrial, tol, j, ok);
     }
 }
@@ -705,14 +716,14 @@ void Tube::bound_right(int qLnb, double t, double k, double Period) {
     if (int(t / k) < 0)
         printf("t/k negative in bound_right\n");
 
-    Anew[0] = A0[0] * (sq(((Pnew) / fr[0]) + 1.0));
+    Anew[0] = A0[0] * (sq(((Pnew - IPP[qLnb]) / fr[0]) + 1.0));
 
     //    double A05 = A0[0] * (sq(((P05 - IPP[qLnb]) / fr[0]) + 1.0));
     double A05;
     if (qLnb == 0) {
-        A05 = A0[0] * (sq(((P05) / fr[0]) + 1.0));
+        A05 = A0[0] * (sq(((P05 - 0.5 * (IPP[qLnb] + IPP[qLnb])) / fr[0]) + 1.0));
     } else if (qLnb != 0) {
-        A05 = A0[0] * (sq(((P05) / fr[0]) + 1.0));
+        A05 = A0[0] * (sq(((P05 - 0.5 * (IPP[qLnb] + IPP[qLnb - 1])) / fr[0]) + 1.0));
     }
 
     double Ahm05 = 2.0 * A05 - Ah[0];
@@ -817,7 +828,7 @@ void looper(Tube * Arteries[], double threshold, int plts, double k, int max_its
         //====================================================================================================
 
         //  after convergence, run a given number of extra times, and save
-        cout << "Start saving\n\n";
+        cout << "Start saving\nNow exiting\n";
         // exit(1);
         while (tend <= (period_counter + num_to_save) * Period) {
             solver(Arteries, tstart, tend, k, t0, file_name);

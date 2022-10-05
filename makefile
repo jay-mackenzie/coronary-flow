@@ -35,13 +35,13 @@ all: $(MAIN)
 $(MAIN): $(OBJS1) $(OBJS2)
 	@$(CXX) -o $(MAIN) $(LDFLAGS) $(OBJS1) $(OBJS2) $(LIBS)
 
-main.o: main.C coronary.h pulmonary.h
+main.o: main.C main.h
 	@$(CXX) -c $(CXXFLAGS) main.C
 
 junction.o: junction.C junction.h arteries.h tools.h
 	@$(CXX) -c $(CXXFLAGS) junction.C
 
-arteries.o: arteries.C arteries.h junction.h tools.h coronary.h pulmonary.h nr3.h ludcmp.h qrdcmp.h roots_multidim.h
+arteries.o: arteries.C arteries.h junction.h tools.h main.h nr3.h ludcmp.h qrdcmp.h roots_multidim.h
 	@$(CXX) -c $(CXXFLAGS) arteries.C
 
 tools.o: tools.C tools.h

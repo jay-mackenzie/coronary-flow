@@ -2,8 +2,7 @@
 
 // best yet convergence test: compares all points in all tubes between current and prev. periods
 // NOT RESTARTABLE
-#include "coronary.h"
-#include "pulmonary.h"
+#include "main.h"
 #include "tools.h"
 #include "arteries.h"
 #include <cstdio>
@@ -44,9 +43,9 @@ int main(int argc, char * argv[]) {
     
     double t0 =0.0;
     // int gridPts;
-    char * tree;
+    char * tree, * savename;
 
-    if (argc != 3) //argv[0] is the name of the program, here sor06
+    if (argc != 4) //argv[0] is the name of the program, here sor06
     {
         printf("Not enough input arguments, noargc %d and they are %s\n", argc, argv[0]);
         return 1;
@@ -55,14 +54,20 @@ int main(int argc, char * argv[]) {
     // inflow = atoi(argv[2]);
     tree = argv[1]; // select the tree to make
     SVPA = atof(argv[2]);
-    // id = atoi(argv[2]);
+    savename = argv[3];
+
+
 
 
     // if (t0 < 2.0) {t0 = 0.0;} // if fewer than two periods have been run, just start from 0
     // t0 = t0*Period;
 
     // can also be set in the header file or via command line args
+<<<<<<< HEAD
     gridPts = 10, f3 = 2.53*pow(10, 6), fa3 = 1.03*pow(10, 6), threshold =  10.0 ,max_its = 100,num_to_save = 1; 
+=======
+    gridPts = 10, f3 = 2.53*pow(10, 6), fa3 = 1.03*pow(10, 6), threshold =  1.0 ,max_its = 100,num_to_save = 1; 
+>>>>>>> 1e24bf6 (many changes -- mostly to data)
     rm = 0.002;
     
     // set the rest of the stiffnesses.
@@ -198,7 +203,7 @@ int main(int argc, char * argv[]) {
     // exit(1);
     
 
-    looper(Arteries, threshold, plts, k, max_its, num_to_save, tree, t0); // run the model and loop until convergence occurs
+    looper(Arteries, threshold, plts, k, max_its, num_to_save, savename, t0); // run the model and loop until convergence occurs
     
 
     fprintf(stdout, "nbrves = %d, Lax, ", nbrves);

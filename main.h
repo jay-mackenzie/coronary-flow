@@ -24,8 +24,15 @@ int nbrves, N_aorta;               // Number of vessels in the tree.
 //**************************************************************************/
 // data for smaller time steps
 int    n = 16, tmstps = pow(2, n);              // The number of timesteps per period.
-const char*  CO_filename    = "MynardSmolichLong.dat";   // Input flow file at the heart. //
-const char*  small_filename    = "ExtPLong.dat";   // Input flow file at the heart. //
+
+// CO_filename, small_filename;
+
+const char*  CO_filename    = "./Data/JA.dat";   // Input flow file at the heart. //
+const char*  small_filename    = "./Data/JE.dat";   // Input flow file at the heart. //
+        // const char*  CO_filename    = "./Data/corPress_scott.dat";   // Input flow file at the heart. //
+        // const char*  small_filename    = "./Data/pres_sub3.dat";   // Input flow file at the heart. //
+        // const char*  CO_filename    = "./Data/NamshadPAo.dat";   // Input flow file at the heart. //
+        // const char*  small_filename    = "./Data/NamshadPExt.dat";   // Input flow file at the heart. //
 //**************************************************************************/
 // global parameters
 double Tper = 0.70; // The period of one heart beat [s].
