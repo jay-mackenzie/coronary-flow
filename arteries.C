@@ -139,7 +139,7 @@ Tube::Tube(double Length,
         //  =================  PRESSURE AS INLET CONDITION  =================
         if (init == 1) {
             Ps = new double[tmstps + 1];
-            FILE * fi = fopen("corPress_scott.dat", "r"); // Reading in pressure
+            FILE * fi = fopen(CO_filename, "r"); // Reading in pressure
             for (int i = 0; i <= tmstps; i++) {
                 fscanf(fi, "%lf", & Ps[i]);
                 Ps[i] = (Ps[i]) * conv / rho / g / Lr; // non-dimensionalise if required
@@ -162,7 +162,7 @@ Tube::Tube(double Length,
             //  Pressure applied to SMALL vessels
             imp = new double[tmstps + 1];
             RD -> imp = new double[tmstps + 1];
-            FILE * fii = fopen("ExtPress.dat", "r");
+            FILE * fii = fopen(small_filename, "r");
             for (int i = 0; i <= tmstps; i++) {
                 fscanf(fii, "%lf", & imp[i]);
                 imp[i] = SVPA * imp[i] * conv / rho / g / Lr; // from file
