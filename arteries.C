@@ -380,44 +380,82 @@ double Tube::Svec(int k, int i, int j, double Q, double A) {
 
 //  The solutions of Anew and Qnew are found for all interior points of the vessel at (t+k), where k is the length of the current time-step. This function saves the results in the arrays Anew and Qnew, and the function  is made according to Lax-Wendroff's method as described in IMFUFATEKST  no 297 and D2.1-4.
 
+// void Tube::step(double k, int ii, double t, double t0, char * file_name) {
+//     double theta = k / h; // Theta is determined.
+//     double gamma = 0.5 * k; // Gamma is determined.
+
+
+//     if (t0 != 0 && t == t0) {
+//         if (ii == 0) {printf("restarting\n");}
+//     } else { //if not restarting
+//         if (t == t0 + k && ii == 0) {printf("Second time step\n");}
+
+//     for (int i = 0; i <= N; i++) {
+//         // Remember the values at this time level.
+//         Qold[i] = Qnew[i];
+//         Aold[i] = Anew[i];
+
+//         //  Anew and Qnew are predicted at the new time level (t+k).
+//         R1[i] = Rvec(1, i, 0, Qold[i], Aold[i]);
+//         R2[i] = Rvec(2, i, 0, Qold[i], Aold[i]);
+//         S1[i] = Svec(1, i, 0, Qold[i], Aold[i]);
+//         S2[i] = Svec(2, i, 0, Qold[i], Aold[i]);
+//     }
+
+//     for (int i = 0; i < N; i++) {
+//         Ah[i] = 0.5 * (Aold[i + 1] + Aold[i]) - 0.5 * theta * (R1[i + 1] - R1[i]) + 0.5 * gamma * (S1[i + 1] + S1[i]);
+//         Qh[i] = 0.5 * (Qold[i + 1] + Qold[i]) - 0.5 * theta * (R2[i + 1] - R2[i]) + 0.5 * gamma * (S2[i + 1] + S2[i]);
+//         R1h[i] = Rvec(1, i, 1, Qh[i], Ah[i]);
+//         R2h[i] = Rvec(2, i, 1, Qh[i], Ah[i]);
+//         S1h[i] = Svec(1, i, 1, Qh[i], Ah[i]);
+//         S2h[i] = Svec(2, i, 1, Qh[i], Ah[i]);
+//     }
+
+//     for (int i = 1; i < N; i++) {
+//         Anew[i] = Aold[i] - theta * (R1h[i] - R1h[i - 1]) + gamma * (S1h[i] + S1h[i - 1]);
+//         Qnew[i] = Qold[i] - theta * (R2h[i] - R2h[i - 1]) + gamma * (S2h[i] + S2h[i - 1]);
+//     }
+// }
+
+
 void Tube::step(double k, int ii, double t, double t0, char * file_name) {
     double theta = k / h; // Theta is determined.
     double gamma = 0.5 * k; // Gamma is determined.
 
-<<<<<<< HEAD
     if (t0 != 0 && t == t0) {
         if (ii == 0) {printf("restarting\n");}
     } else { //if not restarting
         if (t == t0 + k && ii == 0) {printf("Second time step\n");}
-=======
 
-    for (int i = 0; i <= N; i++) {
-        // Remember the values at this time level.
-        Qold[i] = Qnew[i];
-        Aold[i] = Anew[i];
+        for (int i = 0; i <= N; i++) {
+            // Remember the values at this time level.
+            Qold[i] = Qnew[i];
+            Aold[i] = Anew[i];
 
-        //  Anew and Qnew are predicted at the new time level (t+k).
-        R1[i] = Rvec(1, i, 0, Qold[i], Aold[i]);
-        R2[i] = Rvec(2, i, 0, Qold[i], Aold[i]);
-        S1[i] = Svec(1, i, 0, Qold[i], Aold[i]);
-        S2[i] = Svec(2, i, 0, Qold[i], Aold[i]);
-    }
->>>>>>> 1e24bf6 (many changes -- mostly to data)
+            //  Anew and Qnew are predicted at the new time level (t+k).
+            R1[i] = Rvec(1, i, 0, Qold[i], Aold[i]);
+            R2[i] = Rvec(2, i, 0, Qold[i], Aold[i]);
+            S1[i] = Svec(1, i, 0, Qold[i], Aold[i]);
+            S2[i] = Svec(2, i, 0, Qold[i], Aold[i]);
+        }
 
-    for (int i = 0; i < N; i++) {
-        Ah[i] = 0.5 * (Aold[i + 1] + Aold[i]) - 0.5 * theta * (R1[i + 1] - R1[i]) + 0.5 * gamma * (S1[i + 1] + S1[i]);
-        Qh[i] = 0.5 * (Qold[i + 1] + Qold[i]) - 0.5 * theta * (R2[i + 1] - R2[i]) + 0.5 * gamma * (S2[i + 1] + S2[i]);
-        R1h[i] = Rvec(1, i, 1, Qh[i], Ah[i]);
-        R2h[i] = Rvec(2, i, 1, Qh[i], Ah[i]);
-        S1h[i] = Svec(1, i, 1, Qh[i], Ah[i]);
-        S2h[i] = Svec(2, i, 1, Qh[i], Ah[i]);
-    }
+        for (int i = 0; i < N; i++) {
+            Ah[i] = 0.5 * (Aold[i + 1] + Aold[i]) - 0.5 * theta * (R1[i + 1] - R1[i]) + 0.5 * gamma * (S1[i + 1] + S1[i]);
+            Qh[i] = 0.5 * (Qold[i + 1] + Qold[i]) - 0.5 * theta * (R2[i + 1] - R2[i]) + 0.5 * gamma * (S2[i + 1] + S2[i]);
+            R1h[i] = Rvec(1, i, 1, Qh[i], Ah[i]);
+            R2h[i] = Rvec(2, i, 1, Qh[i], Ah[i]);
+            S1h[i] = Svec(1, i, 1, Qh[i], Ah[i]);
+            S2h[i] = Svec(2, i, 1, Qh[i], Ah[i]);
+        }
 
-    for (int i = 1; i < N; i++) {
-        Anew[i] = Aold[i] - theta * (R1h[i] - R1h[i - 1]) + gamma * (S1h[i] + S1h[i - 1]);
-        Qnew[i] = Qold[i] - theta * (R2h[i] - R2h[i - 1]) + gamma * (S2h[i] + S2h[i - 1]);
+        for (int i = 1; i < N; i++) {
+            Anew[i] = Aold[i] - theta * (R1h[i] - R1h[i - 1]) + gamma * (S1h[i] + S1h[i - 1]);
+            Qnew[i] = Qold[i] - theta * (R2h[i] - R2h[i - 1]) + gamma * (S2h[i] + S2h[i - 1]);
+        }
     }
 }
+
+
 
 //  ==========================  INPUT CONDITION  ==========================
 //  The left boundary (x=0) uses this function to model an inflow into the system. The actual parameter given to the function is the model time. As stated in the mathematical model the constants of the function are chosen in order to ensure a certain CO (specified in main.h). Hence we have the specified value of b. Further the period (dimension-less) is assumed to be Period.
