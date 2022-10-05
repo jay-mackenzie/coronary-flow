@@ -27,8 +27,21 @@ int    n = 16, tmstps = pow(2, n);              // The number of timesteps per p
 
 // CO_filename, small_filename;
 
+
+// jay
 const char*  CO_filename    = "./Data/JA.dat";   // Input flow file at the heart. //
-const char*  small_filename    = "./Data/JE.dat";   // Input flow file at the heart. //
+const char*  small_filename = "./Data/JE.dat";   // External pressure profile
+
+// scott
+// const char*  CO_filename    = "./Data/SA.dat";   // Input flow file at the heart. //
+// const char*  small_filename = "./Data/SE.dat";   // External pressure profile
+
+
+// namshad
+// const char*  CO_filename    = "./Data/NA.dat";   // Input flow file at the heart. //
+// const char*  small_filename = "./Data/NE.dat";   // External pressure profile
+
+
         // const char*  CO_filename    = "./Data/corPress_scott.dat";   // Input flow file at the heart. //
         // const char*  small_filename    = "./Data/pres_sub3.dat";   // Input flow file at the heart. //
         // const char*  CO_filename    = "./Data/NamshadPAo.dat";   // Input flow file at the heart. //
